@@ -1,0 +1,97 @@
+from tkinter import *
+import tkinter.messagebox as tmsg
+from tkinter.filedialog import  askopenfilename,asksaveasfilename
+import os
+def new_file():
+    global file
+    root.title("Untitled-Text Editor")
+    file=None
+    text_area.delete(1.0,END)
+def save_file():
+    global file
+    if file==None:
+        file=asksaveasfilename(initialfile="Untitled.txt",defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+        if file=="":
+            file=None
+        else:
+            f=open(file,"w")
+            f.write(text_area.get(1.0,END))
+            f.close()
+
+            root.title(os.path.basename(file)+" -Text Editor")
+            print("file saved")
+
+    else:
+        f=open(file,"w")
+        f.write(text_area.get(1.0,END))
+        f.close()
+
+
+
+def open_file():
+    global file
+    file=askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+    if file == "":
+        file=None
+    else:
+        root.title(os.path.basename(file)+" - Text Editor")
+        text_area.delete(1.0,END)
+        f=open(file,"r")
+        text_area.insert(1.0,f.read())
+        f.close()
+def quit_app():
+    root.destroy()
+def copy():
+    text_area.event_generate(("<<Copy>>"))
+def cut():
+    text_area.event_generate(("<<Cut>>"))
+def paste():
+    text_area.event_generate(("<<Paste>>"))
+def about_editor():
+    tmsg.showinfo("Help",f"Basic notepads Text Editor by Chetna Aggarwal")
+
+if __name__=='__main__':
+    root=Tk()
+    root.title("Text Editor")
+    root.geometry("700x500")
+
+    text_area=Text(root,font='lucida 13')
+    file=None
+    text_area.pack(expand=True,fill=BOTH)
+
+
+    menu_bar = Menu(root)
+    file_menu = Menu(menu_bar,tearoff=0)
+    file_menu.add_command(label="New",command=new_file)
+    file_menu.add_command(label="Open",command=open_file)
+    file_menu.add_separator()
+    file_menu.add_command(label="Save",command=save_file)
+    file_menu.add_separator()
+    file_menu.add_command(label="Exit",command=quit_app)
+    menu_bar.add_cascade(label="File",menu=file_menu)
+
+    edit_menu=Menu(menu_bar,tearoff=0)
+    edit_menu.add_command(label="Copy",command=copy)
+    edit_menu.add_command(label="Cut",command=cut)
+    edit_menu.add_command(label="Paste",command=paste)
+    menu_bar.add_cascade(label="Edit",menu=edit_menu)
+
+    Design_menu=Menu(menu_bar,tearoff=0)
+    Design_menu.add_command(label="Text editor colour",command=colour)
+    menu_bar.add_cascade(label="Colour",menu=Design_menu)
+
+    help_menu=Menu(menu_bar,tearoff=0)
+    help_menu.add_command(label="Help",command=about_editor)
+    menu_bar.add_cascade(label="Help",menu=help_menu)
+
+    root.config(menu=menu_bar)
+
+    scrollbar=Scrollbar(text_area)
+    scrollbar.pack(side=RIGHT,fill=Y)
+    scrollbar.config(command=text_area.yview)
+    text_area.config(yscrollcommand=scrollbar.set)
+
+    root.mainloop()
+
+
+
